@@ -23,7 +23,7 @@
  #include "WProgram.h"
 #endif
 
-#include <Wire.h>
+#include <i2c_t3.h>
 #include <Adafruit_MMA8451.h>
 
 /**************************************************************************/
@@ -33,17 +33,17 @@
 /**************************************************************************/
 static inline uint8_t i2cread(void) {
   #if ARDUINO >= 100
-  return Wire.read();
+  return Wire3.read();
   #else
-  return Wire.receive();
+  return Wire3.receive();
   #endif
 }
 
 static inline void i2cwrite(uint8_t x) {
   #if ARDUINO >= 100
-  Wire.write((uint8_t)x);
+  Wire3.write((uint8_t)x);
   #else
-  Wire.send(x);
+  Wire3.send(x);
   #endif
 }
 
@@ -54,10 +54,10 @@ static inline void i2cwrite(uint8_t x) {
 */
 /**************************************************************************/
 void Adafruit_MMA8451::writeRegister8(uint8_t reg, uint8_t value) {
-  Wire.beginTransmission(_i2caddr);
+  Wire3.beginTransmission(_i2caddr);
   i2cwrite((uint8_t)reg);
   i2cwrite((uint8_t)(value));
-  Wire.endTransmission();
+  Wire3.endTransmission();
 }
 
 /**************************************************************************/
@@ -66,12 +66,12 @@ void Adafruit_MMA8451::writeRegister8(uint8_t reg, uint8_t value) {
 */
 /**************************************************************************/
 uint8_t Adafruit_MMA8451::readRegister8(uint8_t reg) {
-    Wire.beginTransmission(_i2caddr);
+    Wire3.beginTransmission(_i2caddr);
     i2cwrite(reg);
-    Wire.endTransmission(false); // MMA8451 + friends uses repeated start!!
+    Wire3.endTransmission(false); // MMA8451 + friends uses repeated start!!
 
-    Wire.requestFrom(_i2caddr, 1);
-    if (! Wire.available()) return -1;
+    Wire3.requestFrom(_i2caddr, 1);
+    if (! Wire3.available()) return -1;
     return (i2cread());
 }
 
@@ -90,7 +90,7 @@ Adafruit_MMA8451::Adafruit_MMA8451(int32_t sensorID) {
 */
 /**************************************************************************/
 bool Adafruit_MMA8451::begin(uint8_t i2caddr) {
-  Wire.begin();
+  Wire3.begin();
   _i2caddr = i2caddr;
 
   /* Check connection */
@@ -134,14 +134,14 @@ bool Adafruit_MMA8451::begin(uint8_t i2caddr) {
 
 void Adafruit_MMA8451::read(void) {
   // read x y z at once
-  Wire.beginTransmission(_i2caddr);
+  Wire3.beginTransmission(_i2caddr);
   i2cwrite(MMA8451_REG_OUT_X_MSB);
-  Wire.endTransmission(false); // MMA8451 + friends uses repeated start!!
+  Wire3.endTransmission(false); // MMA8451 + friends uses repeated start!!
 
-  Wire.requestFrom(_i2caddr, 6);
-  x = Wire.read(); x <<= 8; x |= Wire.read(); x >>= 2;
-  y = Wire.read(); y <<= 8; y |= Wire.read(); y >>= 2;
-  z = Wire.read(); z <<= 8; z |= Wire.read(); z >>= 2;
+  Wire3.requestFrom(_i2caddr, 6);
+  x = Wire3.read(); x <<= 8; x |= Wire3.read(); x >>= 2;
+  y = Wire3.read(); y <<= 8; y |= Wire3.read(); y >>= 2;
+  z = Wire3.read(); z <<= 8; z |= Wire3.read(); z >>= 2;
 
 
   uint8_t range = getRange();

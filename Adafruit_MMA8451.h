@@ -26,7 +26,7 @@
  #include "WProgram.h"
 #endif
 
-#include <Wire.h>
+#include <i2c_t3.h>
 
 #define USE_SENSOR    // Support the sesor library; comment out to compile/run without sensor library.
 #ifdef USE_SENSOR
